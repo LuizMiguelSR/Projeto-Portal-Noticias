@@ -16,16 +16,23 @@ class NoticiaController extends Controller
      */
     public function index()
     {
-        $noticias = [];
-        //$noticias = Noticia::orderByDesc('created_at')->limit(10)->get();
 
         // Criar um dadodentro do bd Redis
-        Cache::put('site', 'luiz.net.br', 10);
+        // Cache::put('site', 'luiz.net.br', 10);
         // Chave, valor e tempo em segundos para expirar o dado em memória
 
         // Recuperar um dado dentro do bd Redis
-        $site = Cache::get('site');
-        echo $site;
+        // $site = Cache::get('site');
+        // echo $site;
+
+        $noticias = [];
+
+        if (Cache::has('dez_primeiras_noticias')) {
+            $noticias = Cache::get('dez_primeiras_noticias');
+        } else {
+            $noticias = Noticia::orderByDesc('created_at')->limit(10)->get();
+            Cache::put('dez_primeiras_noticias', $noticias, 15);
+        }
 
         return view('noticia', ['noticias' => $noticias]);
     }
