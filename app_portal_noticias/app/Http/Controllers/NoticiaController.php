@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Noticia;
 use App\Http\Requests\StoreNoticiaRequest;
 use App\Http\Requests\UpdateNoticiaRequest;
+use Illuminate\Support\Facades\Cache;
 
 class NoticiaController extends Controller
 {
@@ -15,7 +16,17 @@ class NoticiaController extends Controller
      */
     public function index()
     {
-        $noticias = Noticia::orderByDesc('created_at')->limit(10)->get();
+        $noticias = [];
+        //$noticias = Noticia::orderByDesc('created_at')->limit(10)->get();
+
+        // Criar um dadodentro do bd Redis
+        Cache::put('site', 'luiz.net.br', 10);
+        // Chave, valor e tempo em segundos para expirar o dado em memória
+
+        // Recuperar um dado dentro do bd Redis
+        $site = Cache::get('site');
+        echo $site;
+
         return view('noticia', ['noticias' => $noticias]);
     }
 
